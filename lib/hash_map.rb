@@ -1,4 +1,4 @@
-require_relative 'p04_linked_list'
+require_relative 'linked_list'
 
 class HashMap
   attr_accessor :count

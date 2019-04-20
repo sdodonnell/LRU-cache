@@ -1,5 +1,5 @@
 require 'rspec'
-require 'p04_linked_list'
+require 'linked_list'
 
 describe LinkedList do
   let(:k_v_pairs) do
