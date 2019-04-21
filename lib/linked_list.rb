@@ -26,14 +26,15 @@ end
 class LinkedList
   include Enumerable
 
-  attr_reader :head, :tail, :size
+  attr_reader :head, :tail
+  attr_accessor :size
 
   def initialize
     @head = Node.new
     @tail = Node.new
     @head.next = @tail
     @tail.prev = @head
-    @size = 2
+    @size = 0
   end
 
   def [](i)
@@ -58,15 +59,15 @@ class LinkedList
   end
 
   def empty?
-    self.size > 2
+    self.size == 0
   end
 
   def get(key)
-    # node = self.head
-    # until node.key == key || node.next == nil
-    #   node = node.next
-    # end
-    # node.val
+    node = self.head
+    until node.key == key || node.next == nil
+      node = node.next
+    end
+    node.val
   end
 
   def include?(key)
@@ -81,33 +82,76 @@ class LinkedList
   end
 
   def append(key, val)
-    curr_node = self.head.next
 
-    if !curr_node.val || val < curr_node.val
-      curr_node.next = Node.new(key, val)
-      curr_node.next.next = curr_node
+    new_node = Node.new(key, val)
+
+    if self.empty?
+      self.head.next = new_node
+      new_node.prev = self.head
+      new_node.next = self.tail
+      self.tail.prev = new_node
+      self.size += 1
       return
     end
-    
+
+    prev_node = self.head
+    curr_node = self.head.next
+
     until !curr_node.val || val < curr_node.val
       curr_node = curr_node.next
+      prev_node = prev_node.next
     end
 
-    curr_node.next = Node.new(key, val)
-    curr_node.next.next = curr_node
+    prev_node.next = new_node
+    new_node.prev = prev_node
+    new_node.next = curr_node
+    curr_node.prev = new_node
+
+    self.size += 1
   end
 
   def update(key, val)
+    curr_node = self.head.next
+
+    until curr_node.key == key || !curr_node.next
+      curr_node = curr_node.next
+    end
+
+    if curr_node.key
+      curr_node.val = val
+      return curr_node
+    end
+
   end
 
   def remove(key)
+    return if self.empty?
+
+    curr_node = self.head.next
+
+    until curr_node.key == key || !curr_node.next
+      curr_node = curr_node.next
+    end
+
+    if curr_node.key
+      curr_node.prev.next = curr_node.next
+      curr_node.next.prev = curr_node.prev
+    end
+
   end
 
-  def each
+  def each(&blk)
+    return if self.empty? 
+
+    curr_node = self.head.next
+    until !curr_node.next
+      yield(curr_node)
+      curr_node = curr_node.next
+    end
+
   end
 
-  # uncomment when you have `each` working and `Enumerable` included
-  # def to_s
-  #   inject([]) { |acc, link| acc << "[#{link.key}, #{link.val}]" }.join(", ")
-  # end
+  def to_s
+    inject([]) { |acc, link| acc << "[#{link.key}, #{link.val}]" }.join(", ")
+  end
 end
