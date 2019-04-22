@@ -72,7 +72,7 @@ class LinkedList
 
   def include?(key)
     node = self.head
-    until node.next == self.tail
+    until !node.next
       if node.key == key
         return true
       end
@@ -82,46 +82,25 @@ class LinkedList
   end
 
   def append(key, val)
-
     new_node = Node.new(key, val)
 
-    if self.empty?
-      self.head.next = new_node
-      new_node.prev = self.head
-      new_node.next = self.tail
-      self.tail.prev = new_node
-      self.size += 1
-      return
-    end
-
-    prev_node = self.head
-    curr_node = self.head.next
-
-    until !curr_node.val || val < curr_node.val
-      curr_node = curr_node.next
-      prev_node = prev_node.next
-    end
-
-    prev_node.next = new_node
-    new_node.prev = prev_node
-    new_node.next = curr_node
-    curr_node.prev = new_node
+    self.tail.prev.next = new_node
+    new_node.prev = self.tail.prev
+    new_node.next = self.tail
+    self.tail.prev = new_node
 
     self.size += 1
+
+    new_node
   end
 
   def update(key, val)
-    curr_node = self.head.next
-
-    until curr_node.key == key || !curr_node.next
-      curr_node = curr_node.next
+    each do |node|
+      if node.key == key
+        node.val = val
+        return node
+      end
     end
-
-    if curr_node.key
-      curr_node.val = val
-      return curr_node
-    end
-
   end
 
   def remove(key)
